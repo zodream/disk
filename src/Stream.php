@@ -67,7 +67,16 @@ class Stream {
     }
 
     public function writeLine($line) {
-        return $this->write(PHP_EOL. $line);
+        return $this->write($line.PHP_EOL);
+    }
+
+    /**
+     * cli模式下输出当前内容
+     * @return $this
+     */
+    public function flush() {
+        fflush($this->stream);
+        return $this;
     }
 
     public function read($length) {
