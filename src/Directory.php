@@ -254,6 +254,9 @@ class Directory extends FileObject {
      * @return Directory
      */
     public function addDirectory($name, $mode = 0777) {
+        if (is_null($name)) {
+            return $this;
+        }
         $dir = $this->getChild($name);
         if (!is_dir($dir)) {
             mkdir($dir, $mode);
