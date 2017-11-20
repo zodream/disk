@@ -3,15 +3,13 @@ namespace Zodream\Disk;
 
 /**
  * 这是一个文件夹的操作类，实现对一个文件夹对象的访问操作
- * User: zodream
- * Date: 2016/7/29
- * Time: 11:30
+ * author: zodream
+ * version: v1.0
  */
-
 class Directory extends FileObject {
     /**
      * 初始化 载入文件夹路径
-     * @param $directory
+     * @param FileObject|string $directory 文件夹路径
      */
     public function __construct($directory) {
         if ($directory instanceof FileObject) {
@@ -25,9 +23,9 @@ class Directory extends FileObject {
 
     /**
      * REGEX TO MATCH FILE 正则匹配路径
-     * @param string $pattern
+     * @param string $pattern 通配符
      * @param int $flag
-     * @return FileObject[]
+     * @return FileObject[] 文件集合
      */
     public function glob($pattern = '*', $flag = 0) {
         $files = [];
@@ -43,7 +41,7 @@ class Directory extends FileObject {
 
     /**
      * CREATE DIRECTORY
-     * @return bool
+     * @return bool 是否创建成功
      */
     public function create() {
         if ($this->exist()) {
@@ -102,7 +100,7 @@ class Directory extends FileObject {
 
     /**
      * GET FILE BY NAME IN THIS DIRECTORY
-     * @param string $name
+     * @param string $name 文件名
      * @return bool|FileObject
      */
     public function child($name) {
@@ -118,7 +116,7 @@ class Directory extends FileObject {
 
     /**
      * GET CHILD FILE, ONLY ALLOW CHILD NOT '../' '//'
-     * @param string $name
+     * @param string $name 文件名
      * @return string
      */
     protected function getChild($name) {
@@ -127,7 +125,7 @@ class Directory extends FileObject {
 
     /**
      * FILE IN CHILDREN
-     * @param string $name
+     * @param string $name 文件名
      * @return bool
      */
     public function hasFile($name) {
@@ -136,7 +134,7 @@ class Directory extends FileObject {
 
     /**
      * DIRECTORY IN CHILDREN
-     * @param string $name
+     * @param string $name 文件夹名
      * @return bool
      */
     public function hasDirectory($name) {
@@ -145,7 +143,7 @@ class Directory extends FileObject {
 
     /**
      * GET FILE BY NAME
-     * @param string $name
+     * @param string $name 文件名
      * @return File
      */
     public function childFile($name) {
@@ -155,7 +153,7 @@ class Directory extends FileObject {
     /**
      *
      * @param $name
-     * @return File
+     * @return File 文件名或相对路径
      */
     public function file($name) {
         return $this->childFile($name);

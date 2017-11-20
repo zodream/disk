@@ -7,12 +7,18 @@ namespace Zodream\Disk;
  * @version v1.0
  */
 abstract class FileObject {
+    /**
+     * @var 文件名（不含后缀）或文件夹名
+     */
     protected $name;
-    
+
+    /**
+     * @var 完整路径
+     */
     protected $fullName;
 
     /**
-     * GET FILE/DIRECTORY NAME
+     * GET FILE/DIRECTORY NAME(not extension)
      * @return string
      */
     public function getName() {

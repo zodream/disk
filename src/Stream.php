@@ -7,10 +7,19 @@ namespace Zodream\Disk;
  * @version v1.0
  */
 class Stream {
+    /**
+     * @var resource 流句柄
+     */
     protected $stream = null;
 
+    /**
+     * @var bool 是否加锁
+     */
     protected $useLocking = false;
 
+    /**
+     * @var File 文件路径
+     */
     protected $file;
 
     public function __construct($file, $useLocking = false) {
@@ -27,7 +36,7 @@ class Stream {
 
     /**
      * 设置指定的流
-     * @param $stream
+     * @param resource $stream
      * @return $this
      */
     public function setStream($stream) {
@@ -66,7 +75,7 @@ class Stream {
 
     /**
      * 写入
-     * @param $content
+     * @param string $content
      * @return $this
      */
     public function write($content) {
@@ -101,7 +110,7 @@ class Stream {
 
     /**
      * 读取指定长度
-     * @param $length
+     * @param integer $length
      * @return bool|string
      */
     public function read($length) {
@@ -111,8 +120,8 @@ class Stream {
 
     /**
      * 移动操作位置
-     * @param $offset
-     * @param int $whence
+     * @param integer $offset
+     * @param integer $whence
      * @return $this
      */
     public function move($offset, $whence = SEEK_SET) {

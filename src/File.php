@@ -3,9 +3,8 @@ namespace Zodream\Disk;
 /**
  * THIS IS CLASS FILE
  *      MAKE YOU FEEL EASY.
- * User: zodream
- * Date: 2016/7/29
- * Time: 11:28
+ * author: zodream
+ * version: v1.0
  */
 class File extends FileObject {
 
