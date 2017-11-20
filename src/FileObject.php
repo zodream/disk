@@ -1,7 +1,11 @@
 <?php
 namespace Zodream\Disk;
-
-
+/**
+ * 文件系统的访问基类
+ * @package Zodream\Disk
+ * @author zodream
+ * @version v1.0
+ */
 abstract class FileObject {
     protected $name;
     

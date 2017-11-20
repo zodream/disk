@@ -1,6 +1,11 @@
 <?php
 namespace Zodream\Disk;
-
+/**
+ * 对流的处理，包含文件访问流等
+ * @package Zodream\Disk
+ * @author zodream
+ * @version v1.0
+ */
 class Stream {
     protected $stream = null;
 
@@ -20,13 +25,18 @@ class Stream {
         $this->file = $file;
     }
 
+    /**
+     * 设置指定的流
+     * @param $stream
+     * @return $this
+     */
     public function setStream($stream) {
         $this->stream = $stream;
         return $this;
     }
 
     /**
-     *
+     * 根据文件路径开始流的访问
      * @param string $mode  默认写入   r 为读取
      * @return $this
      */
@@ -54,6 +64,11 @@ class Stream {
         return fgets($this->stream);
     }
 
+    /**
+     * 写入
+     * @param $content
+     * @return $this
+     */
     public function write($content) {
         $this->open('a');
         if ($this->useLocking) {
@@ -66,6 +81,11 @@ class Stream {
         return $this;
     }
 
+    /**
+     * 写入一行
+     * @param string $line
+     * @return Stream
+     */
     public function writeLine($line) {
         return $this->write($line.PHP_EOL);
     }
@@ -79,16 +99,31 @@ class Stream {
         return $this;
     }
 
+    /**
+     * 读取指定长度
+     * @param $length
+     * @return bool|string
+     */
     public function read($length) {
         $this->open('r');
         return fread($this->stream, $length);
     }
 
+    /**
+     * 移动操作位置
+     * @param $offset
+     * @param int $whence
+     * @return $this
+     */
     public function move($offset, $whence = SEEK_SET) {
         fseek($this->stream, $offset, $whence);
         return $this;
     }
 
+    /**
+     * 关闭释放流
+     * @return $this
+     */
     public function close() {
         if (is_resource($this->stream)) {
             fclose($this->stream);

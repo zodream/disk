@@ -3,7 +3,7 @@ namespace Zodream\Disk;
 /**
  * 文件操作
  *
- * @author Jason
+ * @author zodream
  * @time 2015-12-1
  */
 

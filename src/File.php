@@ -3,7 +3,7 @@ namespace Zodream\Disk;
 /**
  * THIS IS CLASS FILE
  *      MAKE YOU FEEL EASY.
- * User: zx648
+ * User: zodream
  * Date: 2016/7/29
  * Time: 11:28
  */

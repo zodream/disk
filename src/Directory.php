@@ -2,14 +2,17 @@
 namespace Zodream\Disk;
 
 /**
- * THIS IS CLASS DIRECTORY,
- *      IS'S EASY TO USE DIRECTORY.
- * User: zx648
+ * 这是一个文件夹的操作类，实现对一个文件夹对象的访问操作
+ * User: zodream
  * Date: 2016/7/29
  * Time: 11:30
  */
 
 class Directory extends FileObject {
+    /**
+     * 初始化 载入文件夹路径
+     * @param $directory
+     */
     public function __construct($directory) {
         if ($directory instanceof FileObject) {
             $this->fullName = $directory->getFullName();
@@ -21,7 +24,7 @@ class Directory extends FileObject {
     }
 
     /**
-     * REGEX TO MATCH FILE
+     * REGEX TO MATCH FILE 正则匹配路径
      * @param string $pattern
      * @param int $flag
      * @return FileObject[]
@@ -78,6 +81,10 @@ class Directory extends FileObject {
         return $files;
     }
 
+    /**
+     * 封装对子文件及子文件夹的访问
+     * @param callable $callback
+     */
     public function map(callable $callback) {
         $handle = opendir($this->fullName);
         while (false !== ($name = readdir($handle))) {
