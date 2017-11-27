@@ -45,6 +45,14 @@ class Stream {
     }
 
     /**
+     * 获取流
+     * @return resource
+     */
+    public function getStream() {
+        return $this->stream;
+    }
+
+    /**
      * 根据文件路径开始流的访问
      * @param string $mode  默认写入   r 为读取
      * @return $this
