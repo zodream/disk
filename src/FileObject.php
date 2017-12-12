@@ -115,6 +115,7 @@ abstract class FileObject {
         return false;
     }
 
+
     /**
      * 清除静态缓存
      * @return $this
