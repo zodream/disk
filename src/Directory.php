@@ -322,7 +322,7 @@ class Directory extends FileObject {
 
     /**
      * DELETE SELF
-     * @return bool
+     * @return Directory
      */
     public function delete() {
         $this->clear();
