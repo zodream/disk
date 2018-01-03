@@ -61,8 +61,27 @@ class Stream {
         if (is_resource($this->stream)) {
             return $this;
         }
+        if (!$this->file->exist()) {
+            return $this;
+        }
         $this->stream = fopen($this->file->getFullName(), $mode);
         return $this;
+    }
+
+    public function openRead() {
+        return $this->open('r');
+    }
+
+    public function openWrite() {
+        return $this->open('a');
+    }
+
+    /**
+     * 是否是有效流
+     * @return bool
+     */
+    public function isResource() {
+        return $this->stream !== false && is_resource($this->stream);
     }
 
     /**
@@ -75,10 +94,12 @@ class Stream {
 
     /**
      * 读取一行
+     * @param null $length 为空时表示获取一行
      * @return bool|string
      */
-    public function readLine() {
-        return fgets($this->stream);
+    public function readLine($length = null) {
+        $this->openRead();
+        return fgets($this->stream, $length);
     }
 
     /**
@@ -87,7 +108,7 @@ class Stream {
      * @return $this
      */
     public function write($content) {
-        $this->open('a');
+        $this->openWrite();
         if ($this->useLocking) {
             flock($this->stream, LOCK_EX);
         }
@@ -108,6 +129,15 @@ class Stream {
     }
 
     /**
+     * 写入多行
+     * @param array $lines
+     * @return Stream
+     */
+    public function writeLines(array $lines) {
+        return $this->writeLine(implode(PHP_EOL, $lines));
+    }
+
+    /**
      * cli模式下输出当前内容
      * @return $this
      */
@@ -122,7 +152,7 @@ class Stream {
      * @return bool|string
      */
     public function read($length) {
-        $this->open('r');
+        $this->openRead();
         return fread($this->stream, $length);
     }
 
