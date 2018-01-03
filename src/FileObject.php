@@ -8,7 +8,7 @@ namespace Zodream\Disk;
  */
 abstract class FileObject {
     /**
-     * @var 文件名（不含后缀）或文件夹名
+     * @var 文件名（含后缀）或文件夹名
      */
     protected $name;
 

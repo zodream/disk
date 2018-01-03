@@ -61,9 +61,6 @@ class Stream {
         if (is_resource($this->stream)) {
             return $this;
         }
-        if (!$this->file->exist()) {
-            return $this;
-        }
         $this->stream = fopen($this->file->getFullName(), $mode);
         return $this;
     }
