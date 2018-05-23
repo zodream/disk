@@ -48,6 +48,14 @@ class File extends FileObject {
     }
 
     /**
+     * 获取不带后缀的文件名
+     * @return string
+     */
+    public function getNameWithoutExtension() {
+        return basename($this->name, '.'.$this->extension);
+    }
+
+    /**
      * SET EXTENSION
      * @param string $arg
      * @return $this
