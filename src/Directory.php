@@ -98,6 +98,10 @@ class Directory extends FileObject {
         }
     }
 
+    public function isParent($file) {
+        return strpos($this->fullName, $file) === 0;
+    }
+
     /**
      * GET FILE BY NAME IN THIS DIRECTORY
      * @param string $name 文件名
