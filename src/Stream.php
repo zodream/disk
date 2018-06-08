@@ -96,6 +96,9 @@ class Stream {
      */
     public function readLine($length = null) {
         $this->openRead();
+        if (empty($length)) {
+            return fgets($this->stream);
+        }
         return fgets($this->stream, $length);
     }
 
