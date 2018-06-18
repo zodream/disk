@@ -242,7 +242,7 @@ class File extends FileObject {
      * @return bool
      */
     public function copy($file) {
-        return copy($this->fullName, $file);
+        return copy($this->fullName, (string)$file);
     }
 
     /**
