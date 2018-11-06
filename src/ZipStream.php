@@ -10,10 +10,10 @@ class ZipStream {
      */
     protected $zip;
 
-    public function __construct($file = null) {
+    public function __construct($file = null, $flags = null) {
         $this->zip = new ZipArchive();
         if (!empty($file)) {
-            $this->open($file);
+            $this->open($file, $flags);
         }
     }
 
@@ -22,12 +22,14 @@ class ZipStream {
         return $this;
     }
 
-    public function create($file) {
-        $this->zip->open((string)$file, ZipArchive::CREATE);
-        return $this;
+    public static function create($file) {
+        return new static($file, ZipArchive::CREATE);
     }
 
-    public function addFile($name, $file) {
+    public function addFile($name, $file = null) {
+        if ($name instanceof File) {
+            list($name, $file) = [$name->getName(), $name];
+        }
         $this->zip->addFile((string)$file, $name);
         return $this;
     }
@@ -66,6 +68,9 @@ class ZipStream {
     }
 
     public function close() {
+        if (!$this->zip) {
+            return;
+        }
         $this->zip->close();
     }
 
