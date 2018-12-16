@@ -99,7 +99,7 @@ class Directory extends FileObject {
     }
 
     public function isParent($file) {
-        return strpos($this->fullName, $file) === 0;
+        return !empty($file) && strpos($this->fullName, $file) === 0;
     }
 
     /**
