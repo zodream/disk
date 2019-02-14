@@ -21,9 +21,9 @@ class File extends FileObject {
     public function __construct($file) {
         if ($file instanceof File) {
             $this->fullName = $file->getFullName();
-            $this->name = $this->getName();
-            $this->extension = $this->getExtension();
-            $this->directory = $this->getDirectoryName();
+            $this->name = $file->getName();
+            $this->extension = $file->getExtension();
+            $this->directory = $file->getDirectoryName();
         } else {
             $this->fullName = $this->getSafePath($file);
             $args = pathinfo($this->fullName);
