@@ -242,10 +242,10 @@ class FileSystem {
 		if (is_file($aimUrl) && $overWrite == false) {
 			return false;
 		} elseif (is_file($aimUrl) && $overWrite == true) {
-			self::unlinkFile($aimUrl);
+			self::delete($aimUrl);
 		}
 		$aimDir = dirname($aimUrl);
-		self::createDir($aimDir);
+		mkdir($aimDir);
 		touch($aimUrl);
 		return true;
 	}
@@ -267,7 +267,7 @@ class FileSystem {
 			return false;
 		}
 		if (!is_dir($aimDir)) {
-			self::createDir($aimDir);
+			mkdir($aimDir);
 		}
 		@ $dirHandle = opendir($oldDir);
 		if (!$dirHandle) {
@@ -280,7 +280,7 @@ class FileSystem {
 			if (!is_dir($oldDir . $file)) {
 				self::moveFile($oldDir . $file, $aimDir . $file, $overWrite);
 			} else {
-				self::moveDir($oldDir . $file, $aimDir . $file, $overWrite);
+				self::moveDirectory($oldDir . $file, $aimDir . $file, $overWrite);
 			}
 		}
 		closedir($dirHandle);
@@ -302,10 +302,10 @@ class FileSystem {
 		if (is_file($aimUrl) && $overWrite = false) {
 			return false;
 		} elseif (is_file($aimUrl) && $overWrite = true) {
-			self::unlinkFile($aimUrl);
+			self::delete($aimUrl);
 		}
 		$aimDir = dirname($aimUrl);
-		self::createDir($aimDir);
+		mkdir($aimDir);
 		rename($fileUrl, $aimUrl);
 		return true;
 	}
@@ -328,9 +328,9 @@ class FileSystem {
 				continue;
 			}
 			if (!is_dir($aimDir . $file)) {
-				self::unlinkFile($aimDir . $file);
+				self::delete($aimDir . $file);
 			} else {
-				self::unlinkDir($aimDir . $file);
+				self::deleteDirectory($aimDir . $file);
 			}
 		}
 		closedir($dirHandle);
@@ -343,7 +343,7 @@ class FileSystem {
 	 * @param string|array $paths
 	 * @return boolean
 	 */
-	public function delete($paths) {
+	public static function delete($paths) {
 		$paths = is_array($paths) ? $paths : func_get_args();
 		$success = true;
 
@@ -352,7 +352,7 @@ class FileSystem {
 				if (! @unlink($path)) {
 					$success = false;
 				}
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				$success = false;
 			}
 		}
@@ -376,7 +376,7 @@ class FileSystem {
 			return false;
 		}
 		if (!is_dir($aimDir)) {
-			self::createDir($aimDir);
+			mkdir($aimDir);
 		}
 		$dirHandle = opendir($oldDir);
 		while (false !== ($file = readdir($dirHandle))) {
@@ -386,7 +386,7 @@ class FileSystem {
 			if (!is_dir($oldDir . $file)) {
 				self::copyFile($oldDir . $file, $aimDir . $file, $overWrite);
 			} else {
-				self:: copyDir($oldDir . $file, $aimDir . $file, $overWrite);
+				self:: copyDirectory($oldDir . $file, $aimDir . $file, $overWrite);
 			}
 		}
 		return closedir($dirHandle);
@@ -407,11 +407,48 @@ class FileSystem {
 		if (is_file($aimUrl) && $overWrite == false) {
 			return false;
 		} elseif (is_file($aimUrl) && $overWrite == true) {
-			self::unlinkFile($aimUrl);
+			self::delete($aimUrl);
 		}
 		$aimDir = dirname($aimUrl);
-		self::createDir($aimDir);
+        mkdir($aimDir);
 		copy($fileUrl, $aimUrl);
 		return true;
 	}
+
+	public static function isAbsolutePath($file) {
+	    if (DIRECTORY_SEPARATOR == '/') {
+	        return strpos($file, '/') === 0;
+        }
+        return preg_match('#^[a-zA-Z]+:[\\\/]#', $file, $match);
+    }
+
+    public static function relativePath($base, $path) {
+        if (!static::isAbsolutePath((string)$path)) {
+            return $path;
+        }
+        $base = str_replace('\\', '/', (string)$base);
+        $path = str_replace('\\', '/', (string)$path);
+        $base = ltrim($base, '/');
+        if (strpos($path, $base) === 0) {
+            return substr($path, strlen($base));
+        }
+        $base = explode('/', $base);
+        $path = explode('/', $path);
+        $start = -1;
+        $i = 0;
+        $len = min(count($base), count($path));
+        while ($i < $len) {
+            if ($base[$i] !== $path[$i]) {
+                break;
+            }
+            $start = $i;
+            $i ++;
+        }
+        if ($start < 0) {
+            return $path;
+        }
+        array_splice($path, 0, $start + 1);
+        return sprintf('%s%s', str_repeat('../', count($base) - $start - 1),
+            implode('/', $path));
+    }
 }
