@@ -428,9 +428,9 @@ class FileSystem {
         }
         $base = str_replace('\\', '/', (string)$base);
         $path = str_replace('\\', '/', (string)$path);
-        $base = ltrim($base, '/');
-        if (strpos($path, $base) === 0) {
-            return substr($path, strlen($base));
+        $base = rtrim($base, '/');
+        if (strpos($path, $base.'/') === 0) {
+            return substr($path, strlen($base) + 1);
         }
         $base = explode('/', $base);
         $path = explode('/', $path);
