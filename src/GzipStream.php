@@ -14,15 +14,31 @@ class GzipStream {
         }
     }
 
+    /**
+     * 以gzip 流的形式打开文件
+     * @param string $file
+     * @param string $mode
+     * @return $this
+     */
     public function open($file, $mode = 'a') {
         $this->stream = gzopen((string)$file, $mode);
         return $this;
     }
 
+    /**
+     * 以只读流的形式打开文件
+     * @param $file
+     * @return $this
+     */
     public function openRead($file) {
         return $this->open($file, 'r');
     }
 
+    /**
+     * 以只写流的形式打开文件
+     * @param $file
+     * @return $this
+     */
     public function openWrite($file) {
         return $this->open($file, 'wb9');
     }
@@ -38,6 +54,10 @@ class GzipStream {
         return $this;
     }
 
+    /**
+     * 关闭流
+     * @return $this
+     */
     public function close() {
         if (is_resource($this->stream)) {
             gzclose($this->stream);

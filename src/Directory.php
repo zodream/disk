@@ -98,8 +98,13 @@ class Directory extends FileObject {
         }
     }
 
+    /**
+     * 判断输入的路径是否是当前文件夹的父级
+     * @param string $file
+     * @return bool
+     */
     public function isParent($file) {
-        return !empty($file) && strpos($this->fullName, $file) === 0;
+        return !empty($file) && strpos($this->fullName, (string)$file) === 0;
     }
 
     /**
