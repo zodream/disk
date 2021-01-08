@@ -1,4 +1,5 @@
-<?php 
+<?php
+declare(strict_types=1);
 namespace Zodream\Disk;
 /**
  * 文件操作
@@ -6,7 +7,6 @@ namespace Zodream\Disk;
  * @author zodream
  * @time 2015-12-1
  */
-
 class FileSystem {
 
 	/**

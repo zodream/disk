@@ -19,5 +19,8 @@
         "psr-4": {
             "Zodream\\Disk\\": "src/"
         }
+    },
+    "suggest": {
+        "lib-zip": "*"
     }
 }

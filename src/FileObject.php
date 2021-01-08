@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Disk;
 /**
  * 文件系统的访问基类
@@ -8,20 +9,20 @@ namespace Zodream\Disk;
  */
 abstract class FileObject {
     /**
-     * @var 文件名（含后缀）或文件夹名
+     * @var string 文件名（含后缀）或文件夹名
      */
-    protected $name;
+    protected string $name;
 
     /**
-     * @var 完整路径
+     * @var string 完整路径
      */
-    protected $fullName;
+    protected string $fullName;
 
     /**
      * GET FILE/DIRECTORY NAME(not extension)
      * @return string
      */
-    public function getName() {
+    public function getName(): string {
         return $this->name;
     }
     
@@ -29,7 +30,7 @@ abstract class FileObject {
      * GET FILE/DIRECTORY FULL NAME
      * @return string
      */
-    public function getFullName() {
+    public function getFullName(): string {
         return $this->fullName;
     }
 
@@ -37,7 +38,7 @@ abstract class FileObject {
      * EXIST FILE/DIRECTORY
      * @return boolean
      */
-    public function exist() {
+    public function exist(): bool {
         return file_exists($this->fullName);
     }
 
@@ -45,7 +46,7 @@ abstract class FileObject {
      * IS FILE
      * @return bool
      */
-    public function isFile() {
+    public function isFile(): bool {
         return is_file($this->fullName);
     }
 
@@ -53,7 +54,7 @@ abstract class FileObject {
      * IS DIRECTORY
      * @return bool
      */
-    public function isDirectory() {
+    public function isDirectory(): bool {
         return is_dir($this->fullName);
     }
 
@@ -94,7 +95,7 @@ abstract class FileObject {
      * @param string $file
      * @return string
      */
-    public function getSafePath($file) {
+    public function getSafePath($file): string {
         return str_replace('\\', '/', $file);
     }
 

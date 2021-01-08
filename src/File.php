@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Disk;
 /**
  * THIS IS CLASS FILE
@@ -143,7 +144,7 @@ class File extends FileObject {
      * FILE EXIST
      * @return bool
      */
-    public function exist() {
+    public function exist(): bool {
         return $this->isFile();
     }
 

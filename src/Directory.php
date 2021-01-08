@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Disk;
 
 /**
@@ -205,7 +206,7 @@ class Directory extends FileObject {
      * EXIST DIRECTORY
      * @return bool
      */
-    public function exist() {
+    public function exist(): bool {
         return $this->isDirectory();
     }
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Zodream\Disk;
 /**
  * 对流的处理，包含文件访问流等
