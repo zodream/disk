@@ -152,7 +152,7 @@ class Stream {
      * @param integer $length
      * @return bool|string
      */
-    public function read($length) {
+    public function read(int $length) {
         $this->openRead();
         return fread($this->stream, $length);
     }
