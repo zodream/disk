@@ -92,10 +92,10 @@ class Stream {
 
     /**
      * 读取一行
-     * @param null $length 为空时表示获取一行
+     * @param int $length 为空时表示获取一行
      * @return bool|string
      */
-    public function readLine($length = null) {
+    public function readLine(int $length = 0) {
         $this->openRead();
         if (empty($length)) {
             return fgets($this->stream);
@@ -105,7 +105,7 @@ class Stream {
 
     /**
      * 写入
-     * @param string $content
+     * @param mixed $content
      * @return $this
      */
     public function write($content) {

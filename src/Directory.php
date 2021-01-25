@@ -129,7 +129,7 @@ class Directory extends FileObject {
      * @param string $name 文件名
      * @return string
      */
-    protected function getChild($name) {
+    protected function getChild(string $name) {
         return preg_replace('#/+#', '/', preg_replace('#\.*[\\/]+#', '/', $this->fullName . '/'. $name));
     }
 
@@ -156,7 +156,10 @@ class Directory extends FileObject {
      * @param string $name 文件名
      * @return File
      */
-    public function childFile($name) {
+    public function childFile(string $name) {
+        if (empty($name)) {
+            throw new \Exception('filename error');
+        }
         return new File($this->getChild($name));
     }
 
@@ -165,7 +168,7 @@ class Directory extends FileObject {
      * @param $name
      * @return File 文件名或相对路径
      */
-    public function file($name) {
+    public function file(string $name) {
         return $this->childFile($name);
     }
 
@@ -174,7 +177,7 @@ class Directory extends FileObject {
      * @param string $file
      * @return File
      */
-    public function getFile($file) {
+    public function getFile(string $file) {
         if (is_file($file)) {
             return new File($file);
         }
@@ -186,7 +189,7 @@ class Directory extends FileObject {
      * @param $name
      * @return Directory
      */
-    public function directory($name) {
+    public function directory(string $name) {
         if (is_dir($name)) {
             return new static($name);
         }
@@ -198,7 +201,7 @@ class Directory extends FileObject {
      * @param $name
      * @return static
      */
-    public function childDirectory($name) {
+    public function childDirectory(string $name) {
         return new static($this->getChild($name));
     }
 
@@ -232,7 +235,7 @@ class Directory extends FileObject {
      * @param string $data
      * @return File
      */
-    public function addFile($name, $data) {
+    public function addFile(string $name, $data) {
         $file = new File($this->getChild($name));
         $file->write($data);
         return $file;
