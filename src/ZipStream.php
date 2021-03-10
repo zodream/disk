@@ -11,7 +11,7 @@ class ZipStream {
      */
     protected $zip;
 
-    public function __construct($file = null, $flags = null) {
+    public function __construct($file = null, int $flags = \ZipArchive::RDONLY) {
         $this->zip = new ZipArchive();
         if (!empty($file)) {
             $this->open($file, $flags);
@@ -21,10 +21,10 @@ class ZipStream {
     /**
      * 打开文件流
      * @param $file
-     * @param null $flags
+     * @param int $flags
      * @return $this
      */
-    public function open($file, $flags = null) {
+    public function open($file, int $flags = \ZipArchive::RDONLY) {
         $this->zip->open((string)$file, $flags);
         return $this;
     }
