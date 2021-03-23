@@ -10,6 +10,7 @@ class ZipStream {
      * @var ZipArchive
      */
     protected $zip;
+    protected $file;
 
     public function __construct($file = null, int $flags = \ZipArchive::RDONLY) {
         $this->zip = new ZipArchive();
@@ -26,6 +27,7 @@ class ZipStream {
      */
     public function open($file, int $flags = \ZipArchive::RDONLY) {
         $this->zip->open((string)$file, $flags);
+        $this->file = $file;
         return $this;
     }
 
@@ -90,7 +92,22 @@ class ZipStream {
      * @return $this
      */
     public function extractTo($root) {
-        $this->zip->extractTo((string)$root);
+        // $this->zip->extractTo((string)$root);
+        if (!$root instanceof Directory) {
+            $root = new Directory($root);
+        }
+        $root->create();
+        $length = $this->zip->numFiles;
+        for($i = 0; $i < $length; $i++) {
+            $statInfo = $this->zip->statIndex($i);
+            if ($statInfo['crc'] === 0) {
+                //新建目录
+                $root->directory(substr($statInfo['name'], 0,-1))->create();
+                continue;
+            }
+            copy('zip://'.(string)$this->file.'#'.$statInfo['name'],
+                (string)$root->file($statInfo['name']));
+        }
         return $this;
     }
 
