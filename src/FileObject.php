@@ -110,7 +110,7 @@ abstract class FileObject {
         } else {
             $root = rtrim($this->getSafePath($root), '/');
         }
-        if (strpos($this->fullName, $root) === 0) {
+        if (str_starts_with($this->fullName, $root)) {
             return substr($this->fullName, strlen($root));
         }
         return false;
