@@ -86,6 +86,9 @@ class Directory extends FileObject {
      */
     public function map(callable $callback) {
         $handle = opendir($this->fullName);
+        if (is_bool($handle)) {
+            return;
+        }
         while (false !== ($name = readdir($handle))) {
             if ($name == '.' || $name == '..') {
                 continue;
