@@ -52,7 +52,7 @@ class FileSystem {
 	 * @param bool $point 是否带点
 	 * @return string
 	 */
-	public static function getExtension($file, $point = false) {
+	public static function getExtension(string $file, bool $point = false): string {
 		$arg = strtolower(substr(strrchr($file, '.'), 1));
 		if (empty($arg) || !$point) {
 			return $arg;
