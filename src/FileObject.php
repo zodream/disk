@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace Zodream\Disk;
+
 /**
  * 文件系统的访问基类
  * @package Zodream\Disk
@@ -64,7 +65,7 @@ abstract class FileObject {
      * @param resource|null $context
      * @return bool
      */
-    public function rename($file, $context = null) {
+    public function rename(mixed $file, $context = null): bool {
         if (is_resource($context)) {
             return rename($this->fullName, (string)$file, $context);
         }
@@ -76,15 +77,15 @@ abstract class FileObject {
      * @param int $mode
      * @return bool
      */
-    public function chmod($mode) {
+    public function chmod(int $mode): bool {
         return chmod($this->fullName, $mode);
     }
     
-    abstract public function move($file);
+    abstract public function move(mixed $file): bool;
     
-    abstract public function copy($file);
+    abstract public function copy(mixed $file): bool;
     
-    abstract public function delete();
+    abstract public function delete(): bool;
     
     public function __toString() {
         return $this->getFullName();
@@ -95,16 +96,16 @@ abstract class FileObject {
      * @param string $file
      * @return string
      */
-    public function getSafePath($file): string {
+    public function getSafePath(string $file): string {
         return str_replace('\\', '/', $file);
     }
 
     /**
      * GET RELATIVE PATH, BUT PATH MUST BE ROOT'S CHILD
-     * @param string $root
+     * @param FileObject|string $root
      * @return bool|string
      */
-    public function getRelative($root) {
+    public function getRelative(FileObject|string $root): string|bool {
         if ($root instanceof FileObject) {
             $root = $root->getFullName();
         } else {

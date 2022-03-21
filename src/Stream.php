@@ -16,12 +16,12 @@ class Stream {
     /**
      * @var bool 是否加锁
      */
-    protected $useLocking = false;
+    protected bool $useLocking = false;
 
     /**
      * @var File 文件路径
      */
-    protected $file;
+    protected mixed $file;
 
     public function __construct($file, $useLocking = false) {
         $this->useLocking = $useLocking;
@@ -58,7 +58,7 @@ class Stream {
      * @param string $mode  默认写入   r 为读取
      * @return $this
      */
-    public function open($mode = 'a') {
+    public function open(string $mode = 'a') {
         if (is_resource($this->stream)) {
             return $this;
         }
@@ -95,7 +95,7 @@ class Stream {
      * @param int $length 为空时表示获取一行
      * @return bool|string
      */
-    public function readLine(int $length = 0) {
+    public function readLine(int $length = 0): bool|string {
         $this->openRead();
         if (empty($length)) {
             return fgets($this->stream);
@@ -108,7 +108,7 @@ class Stream {
      * @param mixed $content
      * @return $this
      */
-    public function write($content) {
+    public function write(mixed $content) {
         $this->openWrite();
         if ($this->useLocking) {
             flock($this->stream, LOCK_EX);
@@ -125,7 +125,7 @@ class Stream {
      * @param string $line
      * @return Stream
      */
-    public function writeLine($line) {
+    public function writeLine(mixed $line) {
         return $this->write($line.PHP_EOL);
     }
 
@@ -163,7 +163,7 @@ class Stream {
      * @param integer $whence
      * @return $this
      */
-    public function move($offset, $whence = SEEK_SET) {
+    public function move(int $offset, int $whence = SEEK_SET) {
         fseek($this->stream, $offset, $whence);
         return $this;
     }

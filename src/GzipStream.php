@@ -21,7 +21,7 @@ class GzipStream {
      * @param string $mode
      * @return $this
      */
-    public function open($file, $mode = 'a') {
+    public function open(mixed $file, string $mode = 'a') {
         $this->stream = gzopen((string)$file, $mode);
         return $this;
     }
@@ -31,7 +31,7 @@ class GzipStream {
      * @param $file
      * @return $this
      */
-    public function openRead($file) {
+    public function openRead(mixed $file) {
         return $this->open($file, 'r');
     }
 
@@ -40,7 +40,7 @@ class GzipStream {
      * @param $file
      * @return $this
      */
-    public function openWrite($file) {
+    public function openWrite(mixed $file) {
         return $this->open($file, 'wb9');
     }
 
@@ -50,7 +50,7 @@ class GzipStream {
      * @param string $content
      * @return $this
      */
-    public function write($content) {
+    public function write(string $content) {
         gzwrite($this->stream, $content);
         return $this;
     }

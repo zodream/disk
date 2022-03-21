@@ -28,7 +28,7 @@ class Directory extends FileObject {
      * @param int $flag
      * @return FileObject[] 文件集合
      */
-    public function glob($pattern = '*', $flag = 0) {
+    public function glob(string $pattern = '*', int $flag = 0) {
         $files = [];
         foreach (glob($this->fullName.'/'.$pattern, $flag) as $item) {
             if (is_dir($item)) {
@@ -44,7 +44,7 @@ class Directory extends FileObject {
      * CREATE DIRECTORY
      * @return bool 是否创建成功
      */
-    public function create() {
+    public function create(): bool {
         if ($this->exist()) {
             return true;
         }
@@ -64,7 +64,7 @@ class Directory extends FileObject {
      * GET PARENT DIRECTORY
      * @return static
      */
-    public function parent() {
+    public function parent(): Directory {
         return new static(dirname($this->fullName));
     }
 
@@ -72,7 +72,7 @@ class Directory extends FileObject {
      * GET ALL CHILDREN OF DIRECTORY
      * @return FileObject[]
      */
-    public function children() {
+    public function children(): array {
         $files = [];
         $this->map(function ($file) use (&$files) {
             $files[] = $file;
@@ -107,8 +107,8 @@ class Directory extends FileObject {
      * @param string $file
      * @return bool
      */
-    public function isParent($file) {
-        return !empty($file) && strpos($this->fullName, (string)$file) === 0;
+    public function isParent(mixed $file): bool {
+        return !empty($file) && str_starts_with($this->fullName, (string)$file);
     }
 
     /**
@@ -116,7 +116,7 @@ class Directory extends FileObject {
      * @param string $name 文件名
      * @return bool|FileObject
      */
-    public function child($name) {
+    public function child(string $name): bool|FileObject {
         $file = $this->getChild($name);
         if (is_dir($file)) {
             return new static($file);
@@ -132,7 +132,7 @@ class Directory extends FileObject {
      * @param string $name 文件名
      * @return string
      */
-    protected function getChild(string $name) {
+    protected function getChild(string $name): string {
         return preg_replace('#/+#', '/', preg_replace('#\.*[\\/]+#', '/', $this->fullName . '/'. $name));
     }
 
@@ -141,7 +141,7 @@ class Directory extends FileObject {
      * @param string $name 文件名
      * @return bool
      */
-    public function hasFile($name) {
+    public function hasFile(string $name): bool {
         return is_file($this->getChild($name));
     }
 
@@ -150,7 +150,7 @@ class Directory extends FileObject {
      * @param string $name 文件夹名
      * @return bool
      */
-    public function hasDirectory($name) {
+    public function hasDirectory(string $name): bool {
         return is_dir($this->getChild($name));
     }
 
@@ -159,7 +159,7 @@ class Directory extends FileObject {
      * @param string $name 文件名
      * @return File
      */
-    public function childFile(string $name) {
+    public function childFile(string $name): File {
         if (empty($name)) {
             throw new \Exception('filename error');
         }
@@ -171,7 +171,7 @@ class Directory extends FileObject {
      * @param $name
      * @return File 文件名或相对路径
      */
-    public function file(string $name) {
+    public function file(string $name): File {
         return $this->childFile($name);
     }
 
@@ -180,7 +180,7 @@ class Directory extends FileObject {
      * @param string $file
      * @return File
      */
-    public function getFile(string $file) {
+    public function getFile(string $file): File {
         if (is_file($file)) {
             return new File($file);
         }
@@ -192,7 +192,7 @@ class Directory extends FileObject {
      * @param $name
      * @return Directory
      */
-    public function directory(string $name) {
+    public function directory(string $name): Directory {
         if (is_dir($name)) {
             return new static($name);
         }
@@ -204,7 +204,7 @@ class Directory extends FileObject {
      * @param $name
      * @return static
      */
-    public function childDirectory(string $name) {
+    public function childDirectory(string $name): Directory {
         return new static($this->getChild($name));
     }
 
@@ -218,17 +218,17 @@ class Directory extends FileObject {
 
     /**
      * GET FREE SPACE
-     * @return float
+     * @return bool|float
      */
-    public function freeSpace() {
+    public function freeSpace(): bool|float {
         return disk_free_space($this->fullName);
     }
 
     /**
      * GET TOTAL SPACE
-     * @return float
+     * @return bool|float
      */
-    public function totalSpace() {
+    public function totalSpace(): bool|float {
         return disk_total_space($this->fullName);
     }
 
@@ -238,7 +238,7 @@ class Directory extends FileObject {
      * @param string $data
      * @return File
      */
-    public function addFile(string $name, $data) {
+    public function addFile(string $name, mixed $data): File {
         $file = new File($this->getChild($name));
         $file->write($data);
         return $file;
@@ -249,7 +249,7 @@ class Directory extends FileObject {
      * @param string $arg
      * @return bool
      */
-    public function deleteFile($arg) {
+    public function deleteFile(string $arg): bool {
         foreach (func_get_args() as $name) {
             (new File($this->getChild($name)))->delete();
         }
@@ -261,7 +261,7 @@ class Directory extends FileObject {
      * @param string $arg
      * @return bool
      */
-    public function deleteDirectory($arg) {
+    public function deleteDirectory(string $arg): bool {
         foreach (func_get_args() as $name) {
             (new static($this->fullName.'/'.$name))->delete();
         }
@@ -270,11 +270,11 @@ class Directory extends FileObject {
 
     /**
      * ADD DIRECTORY IN DIRECTORY
-     * @param string $name
+     * @param string|null $name
      * @param int $mode
      * @return Directory
      */
-    public function addDirectory($name, $mode = 0777) {
+    public function addDirectory(?string $name, int $mode = 0777): Directory {
         if (is_null($name)) {
             return $this;
         }
@@ -291,7 +291,7 @@ class Directory extends FileObject {
      * @param $file
      * @return string
      */
-    public function getAbsolute($file) {
+    public function getAbsolute(string $file): string {
         if (is_file($file)) {
             return $file;
         }
@@ -315,7 +315,7 @@ class Directory extends FileObject {
      * @param string $file
      * @return bool
      */
-    public function move($file) {
+    public function move(mixed $file): bool {
         $result = true;
         $this->map(function (FileObject $item) use (&$result, $file) {
             $result = $result && $item->move($file. '/'. $item->getName());
@@ -328,7 +328,7 @@ class Directory extends FileObject {
      * @param string $file
      * @return bool
      */
-    public function copy($file) {
+    public function copy(mixed $file): bool {
         $result = true;
         $this->map(function (FileObject $item) use (&$result, $file) {
             $result = $result && $item->copy($file. '/'. $item->getName());
@@ -338,12 +338,12 @@ class Directory extends FileObject {
 
     /**
      * DELETE SELF
-     * @return Directory
+     * @return bool
      */
-    public function delete() {
+    public function delete(): bool {
         $this->clear();
         @rmdir($this->fullName);
-        return $this;
+        return true;
     }
 
     /**

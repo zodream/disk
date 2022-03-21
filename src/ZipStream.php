@@ -25,7 +25,7 @@ class ZipStream {
      * @param int $flags
      * @return $this
      */
-    public function open($file, int $flags = \ZipArchive::RDONLY) {
+    public function open(mixed $file, int $flags = \ZipArchive::RDONLY) {
         $this->zip->open((string)$file, $flags);
         $this->file = $file;
         return $this;
@@ -36,7 +36,7 @@ class ZipStream {
      * @param $file
      * @return static
      */
-    public static function create($file) {
+    public static function create(mixed $file) {
         return new static($file, ZipArchive::CREATE);
     }
 
@@ -46,7 +46,7 @@ class ZipStream {
      * @param string|File $file 文件路径
      * @return $this
      */
-    public function addFile($name, $file = null) {
+    public function addFile(mixed $name, mixed $file = null) {
         if ($name instanceof File) {
             list($name, $file) = [$name->getName(), $name];
         }
@@ -60,7 +60,7 @@ class ZipStream {
      * @param Directory $root
      * @return $this
      */
-    public function addDirectory($name, Directory $root) {
+    public function addDirectory(string $name, Directory $root) {
         $name = trim($name, '/');
         if (!empty($name)) {
             $name .= '/';
@@ -81,7 +81,7 @@ class ZipStream {
      * @param $content
      * @return $this
      */
-    public function addString($name, $content) {
+    public function addString(string $name, string $content) {
         $this->zip->addFromString($name, $content);
         return $this;
     }
@@ -91,7 +91,7 @@ class ZipStream {
      * @param $root
      * @return $this
      */
-    public function extractTo($root) {
+    public function extractTo(mixed $root) {
         // $this->zip->extractTo((string)$root);
         if (!$root instanceof Directory) {
             $root = new Directory($root);
@@ -116,7 +116,7 @@ class ZipStream {
      * @param string $content
      * @return $this|string
      */
-    public function comment($content = null) {
+    public function comment(?string $content = null) {
         if (is_null($content)) {
             return $this->zip->getArchiveComment();
         }

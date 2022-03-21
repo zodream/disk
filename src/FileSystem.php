@@ -14,9 +14,8 @@ class FileSystem {
 	 * @param string $directory
 	 * @return array
 	 */
-	public static function files($directory) {
+	public static function files(string $directory): array {
 		$glob = glob($directory.'/*');
-
 		if ($glob === false) {
 			return [];
 		}
@@ -30,11 +29,11 @@ class FileSystem {
 	 * @param string $file
 	 * @return null|string
 	 */
-	public static function getFile($file) {
+	public static function getFile(string $file): ?string {
 		if(is_file($file)) {
 			return $file;
 		}
-		$vendor = dirname(dirname(dirname(__FILE__)));
+		$vendor = dirname(__FILE__, 3);
 		$file   = '/'. ltrim($file, '/');
 		if (is_file($vendor.$file)) {
 			return $vendor.$file;
@@ -67,7 +66,7 @@ class FileSystem {
 	 * @param  string  $path
 	 * @return string
 	 */
-	public static function name($path) {
+	public static function name(string $path): string {
 		return pathinfo($path, PATHINFO_FILENAME);
 	}
 
@@ -77,17 +76,17 @@ class FileSystem {
 	 * @param  string  $path
 	 * @return string
 	 */
-	public static function extension($path) {
+	public static function extension(string $path): string {
 		return pathinfo($path, PATHINFO_EXTENSION);
 	}
 
-	/**
-	 * Get the file type of a given file.
-	 *
-	 * @param  string  $path
-	 * @return string
-	 */
-	public static function type($path) {
+    /**
+     * Get the file type of a given file.
+     *
+     * @param string $path
+     * @return bool|string
+     */
+	public static function type(string $path): bool|string {
 		return filetype($path);
 	}
 
@@ -97,7 +96,7 @@ class FileSystem {
 	 * @param  string  $path
 	 * @return string|false
 	 */
-	public static function mimeType($path) {
+	public static function mimeType(string $path): bool|string {
 		return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path);
 	}
 
@@ -107,7 +106,7 @@ class FileSystem {
 	 * @param  string  $path
 	 * @return int
 	 */
-	public static function size($path) {
+	public static function size(string $path): bool|int {
 		return filesize($path);
 	}
 
@@ -117,7 +116,7 @@ class FileSystem {
 	 * @param  string  $path
 	 * @return int
 	 */
-	public static function lastModified($path) {
+	public static function lastModified(string $path): bool|int {
 		return filemtime($path);
 	}
 
@@ -127,7 +126,7 @@ class FileSystem {
 	 * @param  string  $directory
 	 * @return bool
 	 */
-	public static function isDirectory($directory) {
+	public static function isDirectory(string $directory): bool {
 		return is_dir($directory);
 	}
 
@@ -137,7 +136,7 @@ class FileSystem {
 	 * @param  string  $path
 	 * @return bool
 	 */
-	public static function isWritable($path) {
+	public static function isWritable(string $path): bool {
 		return is_writable($path);
 	}
 
@@ -147,7 +146,7 @@ class FileSystem {
 	 * @param  string  $file
 	 * @return bool
 	 */
-	public static function isFile($file) {
+	public static function isFile(string $file): bool {
 		return is_file($file);
 	}
 
@@ -158,7 +157,7 @@ class FileSystem {
 	 * @param  int     $flags
 	 * @return array
 	 */
-	public static function glob($pattern, $flags = 0) {
+	public static function glob(string $pattern, int $flags = 0): array {
 		return glob($pattern, $flags);
 	}
 
@@ -167,7 +166,7 @@ class FileSystem {
 	 * @param string $file
 	 * @return string
 	 */
-	public static function read($file) {
+	public static function read(string $file): string {
 		return file_get_contents(self::getFile($file));
 	}
 
@@ -178,11 +177,11 @@ class FileSystem {
 	 * @param bool $lock
 	 * @return bool|int
 	 */
-	public static function write($file, $data, $lock = false) {
+	public static function write(string $file, mixed $data, bool|int $lock = false): bool|int {
 		return file_put_contents($file, $data, $lock ? LOCK_EX : 0);
 	}
 
-	public static function exists($path) {
+	public static function exists(string $path): bool {
 		return file_exists($path);
 	}
 
@@ -193,7 +192,7 @@ class FileSystem {
 	 * @param  string  $data
 	 * @return int
 	 */
-	public static function prepend($path, $data) {
+	public static function prepend(string $path, string $data): bool|int {
 		if (self::exists($path)) {
 			return self::write($path, $data.self::read($path));
 		}
@@ -207,7 +206,7 @@ class FileSystem {
 	 * @param  string  $data
 	 * @return int
 	 */
-	public static function append($path, $data) {
+	public static function append(string $path, mixed $data): bool|int {
 		return file_put_contents($path, $data, FILE_APPEND);
 	}
 
@@ -217,7 +216,7 @@ class FileSystem {
 	 * @param string $aimUrl
 	 * @return bool
 	 */
-	public static function createDirectory($aimUrl) {
+	public static function createDirectory(string $aimUrl): bool {
 		$aimUrl = str_replace('', '/', $aimUrl);
 		$aimDir = '';
 		$arr = explode('/', $aimUrl);
@@ -238,7 +237,7 @@ class FileSystem {
 	 * @param boolean $overWrite 该参数控制是否覆盖原文件
 	 * @return boolean
 	 */
-	public static function createFile($aimUrl, $overWrite = false) {
+	public static function createFile(string $aimUrl, bool $overWrite = false): bool {
 		if (is_file($aimUrl) && $overWrite == false) {
 			return false;
 		} elseif (is_file($aimUrl) && $overWrite == true) {
@@ -258,11 +257,11 @@ class FileSystem {
 	 * @param boolean $overWrite 该参数控制是否覆盖原文件
 	 * @return boolean
 	 */
-	public static function moveDirectory($oldDir, $aimDir, $overWrite = false) {
+	public static function moveDirectory(string $oldDir, string $aimDir, bool $overWrite = false): bool {
 		$aimDir = str_replace('', '/', $aimDir);
-		$aimDir = substr($aimDir, -1) == '/' ? $aimDir : $aimDir . '/';
+		$aimDir = str_ends_with($aimDir, '/') ? $aimDir : $aimDir . '/';
 		$oldDir = str_replace('', '/', $oldDir);
-		$oldDir = substr($oldDir, -1) == '/' ? $oldDir : $oldDir . '/';
+		$oldDir = str_ends_with($oldDir, '/') ? $oldDir : $oldDir . '/';
 		if (!is_dir($oldDir)) {
 			return false;
 		}
@@ -295,13 +294,13 @@ class FileSystem {
 	 * @param boolean $overWrite 该参数控制是否覆盖原文件
 	 * @return boolean
 	 */
-	public static function moveFile($fileUrl, $aimUrl, $overWrite = false) {
+	public static function moveFile(string $fileUrl, string $aimUrl, bool $overWrite = false): bool {
 		if (!is_file($fileUrl)) {
 			return false;
 		}
-		if (is_file($aimUrl) && $overWrite = false) {
+		if (is_file($aimUrl) && !$overWrite) {
 			return false;
-		} elseif (is_file($aimUrl) && $overWrite = true) {
+		} elseif (is_file($aimUrl) && $overWrite) {
 			self::delete($aimUrl);
 		}
 		$aimDir = dirname($aimUrl);
@@ -316,15 +315,15 @@ class FileSystem {
 	 * @param string $aimDir
 	 * @return boolean
 	 */
-	public static function deleteDirectory($aimDir) {
+	public static function deleteDirectory(string $aimDir): bool {
 		$aimDir = str_replace('', '/', $aimDir);
-		$aimDir = substr($aimDir, -1) == '/' ? $aimDir : $aimDir . '/';
+		$aimDir = str_ends_with($aimDir, '/') ? $aimDir : $aimDir . '/';
 		if (!is_dir($aimDir)) {
 			return false;
 		}
 		$dirHandle = opendir($aimDir);
 		while (false !== ($file = readdir($dirHandle))) {
-			if ($file == '.' || $file == '..') {
+			if ($file === '.' || $file === '..') {
 				continue;
 			}
 			if (!is_dir($aimDir . $file)) {
@@ -343,7 +342,7 @@ class FileSystem {
 	 * @param string|array $paths
 	 * @return boolean
 	 */
-	public static function delete($paths) {
+	public static function delete(string|array $paths): bool {
 		$paths = is_array($paths) ? $paths : func_get_args();
 		$success = true;
 
@@ -367,11 +366,11 @@ class FileSystem {
 	 * @param boolean $overWrite 该参数控制是否覆盖原文件
 	 * @return boolean
 	 */
-	public static function copyDirectory($oldDir, $aimDir, $overWrite = false) {
+	public static function copyDirectory(string $oldDir, string $aimDir, bool $overWrite = false): bool {
 		$aimDir = str_replace('', '/', $aimDir);
-		$aimDir = substr($aimDir, -1) == '/' ? $aimDir : $aimDir . '/';
+		$aimDir = str_ends_with($aimDir, '/') ? $aimDir : $aimDir . '/';
 		$oldDir = str_replace('', '/', $oldDir);
-		$oldDir = substr($oldDir, -1) == '/' ? $oldDir : $oldDir . '/';
+		$oldDir = str_ends_with($oldDir, '/') ? $oldDir : $oldDir . '/';
 		if (!is_dir($oldDir)) {
 			return false;
 		}
@@ -389,7 +388,8 @@ class FileSystem {
 				self:: copyDirectory($oldDir . $file, $aimDir . $file, $overWrite);
 			}
 		}
-		return closedir($dirHandle);
+        closedir($dirHandle);
+		return true;
 	}
 
 	/**
@@ -400,7 +400,7 @@ class FileSystem {
 	 * @param boolean $overWrite 该参数控制是否覆盖原文件
 	 * @return boolean
 	 */
-	public static function copyFile($fileUrl, $aimUrl, $overWrite = false) {
+	public static function copyFile(string $fileUrl, string $aimUrl, bool $overWrite = false): bool {
 		if (!is_file($fileUrl)) {
 			return false;
 		}
@@ -415,30 +415,30 @@ class FileSystem {
 		return true;
 	}
 
-	public static function isAbsolutePath($file) {
+	public static function isAbsolutePath(string $file): bool {
 	    if (DIRECTORY_SEPARATOR == '/') {
-	        return strpos($file, '/') === 0;
+	        return str_starts_with($file, '/');
         }
-        return preg_match('#^[a-zA-Z]+:[\\\/]#', $file, $match);
+        return !!preg_match('#^[a-zA-Z]+:[\\\/]#', $file, $_);
     }
 
-    public static function relativePath($base, $path) {
-        if (!static::isAbsolutePath((string)$path)) {
+    public static function relativePath(string $base, string $path): string {
+        if (!static::isAbsolutePath($path)) {
             return $path;
         }
-        $base = str_replace('\\', '/', (string)$base);
-        $path = str_replace('\\', '/', (string)$path);
+        $base = str_replace('\\', '/', $base);
+        $path = str_replace('\\', '/', $path);
         $base = rtrim($base, '/');
-        if (strpos($path, $base.'/') === 0) {
+        if (str_starts_with($path, $base . '/')) {
             return substr($path, strlen($base) + 1);
         }
-        $base = explode('/', $base);
-        $path = explode('/', $path);
+        $baseArr = explode('/', $base);
+        $pathArr = explode('/', $path);
         $start = -1;
         $i = 0;
-        $len = min(count($base), count($path));
+        $len = min(count($baseArr), count($pathArr));
         while ($i < $len) {
-            if ($base[$i] !== $path[$i]) {
+            if ($baseArr[$i] !== $pathArr[$i]) {
                 break;
             }
             $start = $i;
@@ -447,8 +447,8 @@ class FileSystem {
         if ($start < 0) {
             return $path;
         }
-        array_splice($path, 0, $start + 1);
-        return sprintf('%s%s', str_repeat('../', count($base) - $start - 1),
+        array_splice($pathArr, 0, $start + 1);
+        return sprintf('%s%s', str_repeat('../', count($baseArr) - $start - 1),
             implode('/', $path));
     }
 }
