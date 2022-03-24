@@ -449,6 +449,6 @@ class FileSystem {
         }
         array_splice($pathArr, 0, $start + 1);
         return sprintf('%s%s', str_repeat('../', count($baseArr) - $start - 1),
-            implode('/', $path));
+            $path);
     }
 }
