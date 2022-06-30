@@ -182,26 +182,26 @@ class Directory extends FileObject {
      */
     public function getFile(string $file): File {
         if (is_file($file)) {
-            return new File($file);
+            return new File(realpath($file));
         }
         return $this->childFile($file);
     }
 
     /**
      * 子目录
-     * @param $name
+     * @param string $name
      * @return Directory
      */
     public function directory(string $name): Directory {
         if (is_dir($name)) {
-            return new static($name);
+            return new static(realpath($name));
         }
         return $this->childDirectory($name);
     }
 
     /**
      * GET DIRECTORY BY NAME
-     * @param $name
+     * @param string $name
      * @return static
      */
     public function childDirectory(string $name): Directory {
