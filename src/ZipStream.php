@@ -105,8 +105,27 @@ class ZipStream {
                 $root->directory(substr($statInfo['name'], 0,-1))->create();
                 continue;
             }
-            copy('zip://'.(string)$this->file.'#'.$statInfo['name'],
+            copy('zip://'.$this->file.'#'.$statInfo['name'],
                 (string)$root->file($statInfo['name']));
+        }
+        return $this;
+    }
+
+    /**
+     * 遍历文件
+     * @param callable $func (string $name, bool $isFolder)
+     * @return $this
+     */
+    public function each(callable $func) {
+        $length = $this->zip->numFiles;
+        for($i = 0; $i < $length; $i++) {
+            $statInfo = $this->zip->statIndex($i);
+            if ($statInfo['crc'] === 0) {
+                //新建目录
+                $func(substr($statInfo['name'], 0,-1), true);
+                continue;
+            }
+            $func($statInfo['name'], false);
         }
         return $this;
     }
