@@ -109,7 +109,10 @@ abstract class FileObject {
         if ($root instanceof FileObject) {
             $root = $root->getFullName();
         } else {
-            $root = rtrim($this->getSafePath($root), '/');
+            $root = $this->getSafePath($root);
+        }
+        if (!str_ends_with($root, '/')) {
+            $root .= '/';
         }
         if (str_starts_with($this->fullName, $root)) {
             return substr($this->fullName, strlen($root));
@@ -117,6 +120,22 @@ abstract class FileObject {
         return false;
     }
 
+    /**
+     * Judge File is Child File of root
+     * @param FileObject|string $root
+     * @return bool
+     */
+    public function isChild(FileObject|string $root): bool {
+        if ($root instanceof FileObject) {
+            $root = $root->getFullName();
+        } else {
+            $root = $this->getSafePath($root);
+        }
+        if (!str_ends_with($root, '/')) {
+            $root .= '/';
+        }
+        return str_starts_with($this->fullName, $root);
+    }
 
     /**
      * 清除静态缓存

@@ -103,6 +103,25 @@ class Directory extends FileObject {
     }
 
     /**
+     * 遍历全部文件，包括多级子文件
+     * @param callable $callback
+     * @return void
+     */
+    public function mapDeep(callable $callback) {
+        $this->map(function (FileObject $item) use ($callback) {
+            $result = call_user_func($callback,
+                $item);
+            if ($result === false) {
+                return false;
+            }
+            if ($item instanceof Directory) {
+                $item->mapDeep($callback);
+            }
+            return true;
+        });
+    }
+
+    /**
      * 判断输入的路径是否是当前文件夹的父级
      * @param string $file
      * @return bool

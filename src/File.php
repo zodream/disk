@@ -247,6 +247,8 @@ class File extends FileObject {
      * @return bool
      */
     public function copy(mixed $file): bool {
+        $folder = $file instanceof File ? $file->getDirectory() : new Directory(pathinfo((string)$file, PATHINFO_DIRNAME));
+        $folder->create();
         return copy($this->fullName, (string)$file);
     }
 
