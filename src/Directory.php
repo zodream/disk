@@ -194,6 +194,14 @@ class Directory extends FileObject {
         return $this->childFile($name);
     }
 
+    public function combine(...$items): File|Directory {
+        $file = FileSystem::combine($this->fullName, ...$items);
+        if (is_dir($file)) {
+            return new static($file);
+        }
+        return new File($file);
+    }
+
     /**
      * GET FILE OR CHILD FILE
      * @param string $file

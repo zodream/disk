@@ -9,6 +9,54 @@ namespace Zodream\Disk;
  */
 class FileSystem {
 
+    /**
+     * 合并路径
+     * @param string|FileObject $base
+     * @param string[] $items
+     * @return string
+     */
+    public static function combine(string|FileObject $base, ...$items): string {
+        $args = [];
+        $baseFile = str_replace('\\', '/', (string)$base);
+        foreach (explode('/', $baseFile) as $item) {
+            if ($item === '.') {
+                $item = '';
+            } elseif ($item === '..') {
+                if (count($args) === 0) {
+                    $args[] = '';
+                    continue;
+                }
+                if (count($args) === 1) {
+                    continue;
+                }
+                array_pop($args);
+                continue;
+            }
+            if ($item !== '' || count($args) === 0) {
+                $args[] = $item;
+            }
+        }
+        foreach ($items as $item) {
+            $item = str_replace('\\', '/', (string)$item);
+            foreach (explode('/', $item) as $it) {
+                if ($it === '.') {
+                    continue;
+                }
+                if ($item === '..') {
+                    if (count($args) <= 1) {
+                        continue;
+                    }
+                    array_pop($args);
+                    continue;
+                }
+                if ($it !== '') {
+                    $args[] = $it;
+                }
+            }
+        }
+        return implode('/', $args);
+    }
+
 	/**
 	 * 遍历文件夹获取所有的文件
 	 * @param string $directory
@@ -238,9 +286,9 @@ class FileSystem {
 	 * @return boolean
 	 */
 	public static function createFile(string $aimUrl, bool $overWrite = false): bool {
-		if (is_file($aimUrl) && $overWrite == false) {
+		if (is_file($aimUrl) && !$overWrite) {
 			return false;
-		} elseif (is_file($aimUrl) && $overWrite == true) {
+		} elseif (is_file($aimUrl) && $overWrite) {
 			self::delete($aimUrl);
 		}
 		$aimDir = dirname($aimUrl);
@@ -404,9 +452,9 @@ class FileSystem {
 		if (!is_file($fileUrl)) {
 			return false;
 		}
-		if (is_file($aimUrl) && $overWrite == false) {
+		if (is_file($aimUrl) && !$overWrite) {
 			return false;
-		} elseif (is_file($aimUrl) && $overWrite == true) {
+		} elseif (is_file($aimUrl) && $overWrite) {
 			self::delete($aimUrl);
 		}
 		$aimDir = dirname($aimUrl);
