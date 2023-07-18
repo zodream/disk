@@ -97,7 +97,7 @@ abstract class FileObject {
      * @return string
      */
     public function getSafePath(string $file): string {
-        return str_replace('\\', '/', $file);
+        return FileSystem::repairSeparator($file);
     }
 
     /**

@@ -7,7 +7,55 @@ namespace Zodream\Disk;
  * @author zodream
  * @time 2015-12-1
  */
-class FileSystem {
+final class FileSystem {
+
+    public static function isLinux(): bool {
+        return DIRECTORY_SEPARATOR === '/';
+    }
+
+    /**
+     * 修复拆分
+     * @param mixed $path
+     * @return string
+     */
+    public static function repairSeparator(mixed $path): string {
+        return str_replace('\\', '/', (string)$path);
+//        if (DIRECTORY_SEPARATOR === '/') {
+//            return str_replace('\\', '/', (string)$path);
+//        }
+//        return str_replace('/', '\\', (string)$path);
+    }
+
+    /**
+     * 过滤安全路径，不允许 ../
+     * @param string|null $path
+     * @param bool $isRoot 是否时根目录，前置需要加 / 吗
+     * @return string
+     */
+    public static function filterPath(mixed $path, bool $isRoot = true): string {
+        $args = [];
+        $baseFile = static::repairSeparator($path);
+        if (!static::isLinux() && str_contains($baseFile, ':')) {
+            $isRoot = true;
+            $i = strpos($baseFile, ':') + 1;
+            $args[] = str_replace('/', '', substr($baseFile, 0, $i));
+            $baseFile = str_replace(':', '', substr($baseFile, $i));
+        } else if ($isRoot) {
+            $args[] = '';
+        }
+        foreach (explode('/', $baseFile) as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+            if ($item !== '') {
+                $args[] = $item;
+            }
+        }
+        if ($isRoot && count($args) === 1) {
+            $args[] = '';
+        }
+        return implode('/', $args);
+    }
 
     /**
      * 合并路径
@@ -17,44 +65,34 @@ class FileSystem {
      */
     public static function combine(string|FileObject $base, ...$items): string {
         $args = [];
-        $baseFile = str_replace('\\', '/', (string)$base);
-        foreach (explode('/', $baseFile) as $item) {
-            if ($item === '.') {
-                $item = '';
-            } elseif ($item === '..') {
-                if (count($args) === 0) {
-                    $args[] = '';
-                    continue;
-                }
-                if (count($args) === 1) {
-                    continue;
-                }
-                array_pop($args);
-                continue;
-            }
-            if ($item !== '' || count($args) === 0) {
-                $args[] = $item;
-            }
-        }
-        foreach ($items as $item) {
-            $item = str_replace('\\', '/', (string)$item);
-            foreach (explode('/', $item) as $it) {
-                if ($it === '.') {
-                    continue;
-                }
-                if ($item === '..') {
-                    if (count($args) <= 1) {
+        foreach (func_get_args() as $path) {
+            $path = static::repairSeparator($path);
+            foreach (explode('/', $path) as $item) {
+                if ($item === '.') {
+                    $item = '';
+                } elseif ($item === '..') {
+                    if (count($args) === 0) {
+                        $args[] = '';
+                        continue;
+                    }
+                    if (count($args) === 1) {
                         continue;
                     }
                     array_pop($args);
                     continue;
                 }
-                if ($it !== '') {
-                    $args[] = $it;
+                if ($item !== '' || count($args) === 0) {
+                    $args[] = $item;
                 }
             }
         }
         return implode('/', $args);
+    }
+
+    public static function join(mixed $base, mixed $path): string {
+        $base = static::repairSeparator($base);
+        $path = static::repairSeparator($path);
+        return sprintf('%s/%s', rtrim($base, '/'), ltrim($path));
     }
 
 	/**
@@ -71,6 +109,22 @@ class FileSystem {
 			return filetype($file) == 'file';
 		});
 	}
+
+    public static function eachFile(string $folder, callable $cb): void {
+        $handle = opendir($folder);
+        if (is_bool($handle)) {
+            return;
+        }
+        while (false !== ($name = readdir($handle))) {
+            if ($name == '.' || $name == '..') {
+                continue;
+            }
+            $result = call_user_func($cb, $name);
+            if ($result === false) {
+                break;
+            }
+        }
+    }
 
 	/**
 	 * 获取完整路径
@@ -93,18 +147,21 @@ class FileSystem {
 		return null;
 	}
 
-	/**
-	 * 获取文件的拓展名
-	 * @param string $file
-	 * @param bool $point 是否带点
-	 * @return string
-	 */
-	public static function getExtension(string $file, bool $point = false): string {
-		$arg = strtolower(substr(strrchr($file, '.'), 1));
-		if (empty($arg) || !$point) {
-			return $arg;
-		}
-		return '.'.$arg;
+    /**
+     * 获取文件的拓展名
+     * @param string $file
+     * @param bool $withPoint
+     * @return string
+     */
+	public static function getExtension(string $file, bool $withPoint = false): string {
+        $i = strrpos($file, '.');
+        if ($i === false) {
+            return '';
+        }
+        if (!$withPoint) {
+            $i ++;
+        }
+        return strtolower(substr($file, $i));
 	}
 
 
@@ -261,18 +318,18 @@ class FileSystem {
 	/**
 	 * 建立文件夹
 	 *
-	 * @param string $aimUrl
+	 * @param string $path
 	 * @return bool
 	 */
-	public static function createDirectory(string $aimUrl): bool {
-		$aimUrl = str_replace('', '/', $aimUrl);
-		$aimDir = '';
-		$arr = explode('/', $aimUrl);
+	public static function createDirectory(string $path): bool {
+        $path = static::repairSeparator($path);
+		$folder = '';
+		$arr = explode('/', $path);
 		$result = true;
 		foreach ($arr as $str) {
-			$aimDir .= $str . '/';
-			if (!is_dir($aimDir)) {
-				$result = mkdir($aimDir);
+            $folder .= $str . '/';
+			if (!is_dir($folder)) {
+				$result = mkdir($folder);
 			}
 		}
 		return $result;
@@ -281,21 +338,34 @@ class FileSystem {
 	/**
 	 * 建立文件
 	 *
-	 * @param string $aimUrl
+	 * @param string $path
 	 * @param boolean $overWrite 该参数控制是否覆盖原文件
 	 * @return boolean
 	 */
-	public static function createFile(string $aimUrl, bool $overWrite = false): bool {
-		if (is_file($aimUrl) && !$overWrite) {
+	public static function createFile(string $path, bool $overWrite = false): bool {
+		if (is_file($path) && !$overWrite) {
 			return false;
-		} elseif (is_file($aimUrl) && $overWrite) {
-			self::delete($aimUrl);
+		} elseif (is_file($path) && $overWrite) {
+			self::delete($path);
 		}
-		$aimDir = dirname($aimUrl);
-		mkdir($aimDir);
-		touch($aimUrl);
+		$folder = dirname($path);
+		mkdir($folder);
+		touch($path);
 		return true;
 	}
+
+    /**
+     * 在路径后面加 /
+     * @param mixed $path
+     * @return string
+     */
+    protected static function appendSeparator(mixed $path): string {
+        $path = static::repairSeparator($path);
+        if (str_ends_with($path, '/')) {
+            return $path;
+        }
+        return $path . '/';
+    }
 
 	/**
 	 * 移动文件夹
@@ -306,10 +376,8 @@ class FileSystem {
 	 * @return boolean
 	 */
 	public static function moveDirectory(string $oldDir, string $aimDir, bool $overWrite = false): bool {
-		$aimDir = str_replace('', '/', $aimDir);
-		$aimDir = str_ends_with($aimDir, '/') ? $aimDir : $aimDir . '/';
-		$oldDir = str_replace('', '/', $oldDir);
-		$oldDir = str_ends_with($oldDir, '/') ? $oldDir : $oldDir . '/';
+		$aimDir = static::appendSeparator($aimDir);
+		$oldDir = static::appendSeparator($oldDir);
 		if (!is_dir($oldDir)) {
 			return false;
 		}
@@ -363,25 +431,24 @@ class FileSystem {
 	 * @param string $aimDir
 	 * @return boolean
 	 */
-	public static function deleteDirectory(string $aimDir): bool {
-		$aimDir = str_replace('', '/', $aimDir);
-		$aimDir = str_ends_with($aimDir, '/') ? $aimDir : $aimDir . '/';
-		if (!is_dir($aimDir)) {
+	public static function deleteDirectory(string $path): bool {
+        $path = static::appendSeparator($path);
+		if (!is_dir($path)) {
 			return false;
 		}
-		$dirHandle = opendir($aimDir);
+		$dirHandle = opendir($path);
 		while (false !== ($file = readdir($dirHandle))) {
 			if ($file === '.' || $file === '..') {
 				continue;
 			}
-			if (!is_dir($aimDir . $file)) {
-				self::delete($aimDir . $file);
+			if (!is_dir($path . $file)) {
+				self::delete($path . $file);
 			} else {
-				self::deleteDirectory($aimDir . $file);
+				self::deleteDirectory($path . $file);
 			}
 		}
 		closedir($dirHandle);
-		return rmdir($aimDir);
+		return rmdir($path);
 	}
 
 	/**
@@ -415,10 +482,8 @@ class FileSystem {
 	 * @return boolean
 	 */
 	public static function copyDirectory(string $oldDir, string $aimDir, bool $overWrite = false): bool {
-		$aimDir = str_replace('', '/', $aimDir);
-		$aimDir = str_ends_with($aimDir, '/') ? $aimDir : $aimDir . '/';
-		$oldDir = str_replace('', '/', $oldDir);
-		$oldDir = str_ends_with($oldDir, '/') ? $oldDir : $oldDir . '/';
+		$aimDir = static::appendSeparator($aimDir);
+		$oldDir = static::appendSeparator($oldDir);
 		if (!is_dir($oldDir)) {
 			return false;
 		}
@@ -474,8 +539,8 @@ class FileSystem {
         if (!static::isAbsolutePath($path)) {
             return $path;
         }
-        $base = str_replace('\\', '/', $base);
-        $path = str_replace('\\', '/', $path);
+        $base = static::repairSeparator($base);
+        $path = static::repairSeparator($path);
         $base = rtrim($base, '/');
         if (str_starts_with($path, $base . '/')) {
             return substr($path, strlen($base) + 1);

@@ -152,7 +152,7 @@ class Directory extends FileObject {
      * @return string
      */
     protected function getChild(string $name): string {
-        return preg_replace('#/+#', '/', preg_replace('#\.*[\\/]+#', '/', $this->fullName . '/'. $name));
+        return FileSystem::combine($this->fullName, FileSystem::filterPath($name, false));
     }
 
     /**
@@ -322,19 +322,7 @@ class Directory extends FileObject {
         if (is_file($file)) {
             return $file;
         }
-        $path = $this->fullName.'/'.$file;
-        $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
-        $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
-        $absolutes = array();
-        foreach ($parts as $part) {
-            if ('.' == $part) continue;
-            if ('..' == $part) {
-                array_pop($absolutes);
-            } else {
-                $absolutes[] = $part;
-            }
-        }
-        return implode(DIRECTORY_SEPARATOR, $absolutes);
+        return FileSystem::combine($this->fullName, $file);
     }
 
     /**
