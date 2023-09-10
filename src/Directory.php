@@ -186,7 +186,7 @@ class Directory extends FileObject {
     }
 
     /**
-     *
+     * 获取子文件路径，不验证是否存在
      * @param $name
      * @return File 文件名或相对路径
      */
