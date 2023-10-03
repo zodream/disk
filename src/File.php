@@ -265,7 +265,7 @@ class File extends FileObject {
      * @return string
      */
     public function md5(): string {
-        return md5_file($this->fullName);
+        return (string)md5_file($this->fullName);
     }
 
     /**
