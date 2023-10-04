@@ -77,7 +77,7 @@ class StreamFinder {
         $this->reset();
         $isOpen = $file instanceof Stream;
         $fs = $isOpen ? $file : new Stream($file);
-        $fs->openRead();
+        $fs->open('rb');
         while (!$fs->isEnd()) {
             $this->matchChar($fs->readChar());
             if ($this->isMatchFirst && $this->isMatched()) {
