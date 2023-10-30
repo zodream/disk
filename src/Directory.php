@@ -84,7 +84,7 @@ class Directory extends FileObject {
      * 封装对子文件及子文件夹的访问
      * @param callable $callback
      */
-    public function map(callable $callback) {
+    public function map(callable $callback): void {
         $handle = opendir($this->fullName);
         if (is_bool($handle)) {
             return;
@@ -107,7 +107,7 @@ class Directory extends FileObject {
      * @param callable $callback
      * @return void
      */
-    public function mapDeep(callable $callback) {
+    public function mapDeep(callable $callback): void {
         $this->map(function (FileObject $item) use ($callback) {
             $result = call_user_func($callback,
                 $item);

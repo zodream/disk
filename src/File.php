@@ -65,14 +65,14 @@ class File extends FileObject {
      * @param string $arg
      * @return $this
      */
-    public function setExtension(string $arg) {
+    public function setExtension(string $arg): static {
         $this->extension = ltrim($arg, '.');
         return $this;
     }
 
     /**
      * GET EXTENSION
-     * @return string
+     * @return string example: html
      */
     public function getExtension(): string {
         return $this->extension;
