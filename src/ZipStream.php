@@ -25,7 +25,7 @@ class ZipStream {
      * @param int $flags
      * @return $this
      */
-    public function open(mixed $file, int $flags = \ZipArchive::RDONLY) {
+    public function open(mixed $file, int $flags = \ZipArchive::RDONLY): static {
         $this->zip->open((string)$file, $flags);
         $this->file = $file;
         return $this;
@@ -36,7 +36,7 @@ class ZipStream {
      * @param $file
      * @return static
      */
-    public static function create(mixed $file) {
+    public static function create(mixed $file): static {
         return new static($file, ZipArchive::CREATE);
     }
 
@@ -46,7 +46,7 @@ class ZipStream {
      * @param string|File $file 文件路径
      * @return $this
      */
-    public function addFile(mixed $name, mixed $file = null) {
+    public function addFile(mixed $name, mixed $file = null): static {
         if ($name instanceof File) {
             list($name, $file) = [$name->getName(), $name];
         }
@@ -60,7 +60,7 @@ class ZipStream {
      * @param Directory $root
      * @return $this
      */
-    public function addDirectory(string $name, Directory $root) {
+    public function addDirectory(string $name, Directory $root): static {
         $name = trim($name, '/');
         if (!empty($name)) {
             $name .= '/';
@@ -81,7 +81,7 @@ class ZipStream {
      * @param $content
      * @return $this
      */
-    public function addString(string $name, string $content) {
+    public function addString(string $name, string $content): static {
         $this->zip->addFromString($name, $content);
         return $this;
     }
@@ -91,7 +91,7 @@ class ZipStream {
      * @param $root
      * @return $this
      */
-    public function extractTo(mixed $root) {
+    public function extractTo(mixed $root): static {
         // $this->zip->extractTo((string)$root);
         if (!$root instanceof Directory) {
             $root = new Directory($root);
@@ -112,11 +112,20 @@ class ZipStream {
     }
 
     /**
+     * 读取文件的内容
+     * @param string $fileName
+     * @return string|bool
+     */
+    public function readFile(string $fileName): string|bool {
+        return $this->zip->getFromName($fileName);
+    }
+
+    /**
      * 遍历文件
      * @param callable $func (string $name, bool $isFolder)
      * @return $this
      */
-    public function each(callable $func) {
+    public function each(callable $func): static {
         $length = $this->zip->numFiles;
         for($i = 0; $i < $length; $i++) {
             $statInfo = $this->zip->statIndex($i);
@@ -135,7 +144,7 @@ class ZipStream {
      * @param string $content
      * @return $this|string
      */
-    public function comment(?string $content = null) {
+    public function comment(?string $content = null): static {
         if (is_null($content)) {
             return $this->zip->getArchiveComment();
         }
@@ -146,7 +155,7 @@ class ZipStream {
     /**
      * 关闭流
      */
-    public function close() {
+    public function close(): void {
         if (!$this->zip) {
             return;
         }
