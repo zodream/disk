@@ -7,7 +7,7 @@ namespace Zodream\Disk;
  * @author zodream
  * @version v1.0
  */
-class Stream {
+class Stream implements IStreamWriter, IStreamReader {
     /**
      * @var resource 流句柄
      */
@@ -94,7 +94,7 @@ class Stream {
      * @param int $length 为空时表示获取一行
      * @return bool|string
      */
-    public function readLine(int $length = 0): bool|string {
+    public function readLine(int $length = 0): false|string {
         $this->openRead();
         if (empty($length)) {
             return fgets($this->stream);
@@ -137,12 +137,16 @@ class Stream {
         return $this;
     }
 
+    public function writeByte(int $byte): static {
+        return $this->write(chr($byte));
+    }
+
     /**
      * 写入一行
      * @param string $line
      * @return Stream
      */
-    public function writeLine(mixed $line) {
+    public function writeLine(mixed $line): static {
         return $this->write($line.PHP_EOL);
     }
 
@@ -199,14 +203,12 @@ class Stream {
 
     /**
      * 关闭释放流
-     * @return $this
      */
-    public function close(): static {
+    public function close(): void {
         if (is_resource($this->stream)) {
             fclose($this->stream);
         }
         $this->stream = null;
-        return $this;
     }
 
 }
