@@ -144,7 +144,7 @@ class ZipStream {
      * @param string $content
      * @return $this|string
      */
-    public function comment(?string $content = null): static {
+    public function comment(string|null $content = null): static {
         if (is_null($content)) {
             return $this->zip->getArchiveComment();
         }

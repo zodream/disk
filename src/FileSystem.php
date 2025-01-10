@@ -131,7 +131,7 @@ final class FileSystem {
 	 * @param string $file
 	 * @return null|string
 	 */
-	public static function getFile(string $file): ?string {
+	public static function getFile(string $file): string|null {
 		if(is_file($file)) {
 			return $file;
 		}

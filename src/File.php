@@ -183,7 +183,7 @@ class File extends FileObject {
      * @param int|null $accessTime
      * @return bool
      */
-    public function touch(?int $modifyTime = null, ?int $accessTime = null): bool {
+    public function touch(int|null $modifyTime = null, int|null $accessTime = null): bool {
         return touch($this->fullName, $modifyTime, $accessTime);
     }
 

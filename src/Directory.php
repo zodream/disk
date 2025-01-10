@@ -301,7 +301,7 @@ class Directory extends FileObject {
      * @param int $mode
      * @return Directory
      */
-    public function addDirectory(?string $name, int $mode = 0777): Directory {
+    public function addDirectory(string|null $name, int $mode = 0777): Directory {
         if (is_null($name)) {
             return $this;
         }
