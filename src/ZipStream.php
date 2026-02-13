@@ -40,6 +40,10 @@ class ZipStream {
         return new static($file, ZipArchive::CREATE);
     }
 
+    public function setPassword(string $password): bool {
+        return $this->zip->setPassword($password);
+    }
+
     /**
      * 添加文件
      * @param string|File $name 文件名
@@ -109,6 +113,16 @@ class ZipStream {
                 (string)$root->file($statInfo['name']));
         }
         return $this;
+    }
+
+    public function extractFile(string $entryName, mixed $outputFile): bool {
+        $fs = $this->zip->getStream($entryName);
+        if (!$fs) {
+            return false;
+        }
+        $res = file_put_contents((string)$outputFile, $fs);
+        fclose($fs);
+        return $res !== false;
     }
 
     /**
