@@ -127,14 +127,14 @@ class Directory extends FileObject {
      * @return bool
      */
     public function isChildOf(mixed $file): bool {
-        return !empty($file) && str_starts_with($this->fullName, (string)$file);
+        return !empty($file) && FileSystem::isParentOf($file, $this->fullName);
     }
 
     /**
      * 判断输入的路径是否是当前文件夹的子级
      */
     public function isParentOf(mixed $file): bool {
-        return !empty($file) && str_starts_with((string)$file, $this->fullName);
+        return !empty($file) && FileSystem::isParentOf($this->fullName, $file);
     }
 
     /**

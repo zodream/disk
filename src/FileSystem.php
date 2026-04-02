@@ -26,6 +26,10 @@ final class FileSystem {
 //        return str_replace('/', '\\', (string)$path);
     }
 
+	public static function isParentOf(mixed $parent, mixed $child): bool {
+		return str_starts_with(self::repairSeparator($child), self::repairSeparator($parent));
+	}
+
     /**
      * 过滤安全路径，不允许 ../
      * @param string|null $path
@@ -147,6 +151,14 @@ final class FileSystem {
 		return null;
 	}
 
+	public static function isFile(mixed $file): bool {
+		$basedir = ini_get('open_basedir');
+		if (empty($basedir) || self::isParentOf(APP_DIR, $file) || self::isParentOf(dirname(__FILE__, 3), $file)) {
+			return is_file((string)$file);
+		}
+		return false;
+	}
+
     /**
      * 获取文件的拓展名
      * @param string $file
@@ -243,16 +255,6 @@ final class FileSystem {
 	 */
 	public static function isWritable(string $path): bool {
 		return is_writable($path);
-	}
-
-	/**
-	 * 是文件
-	 *
-	 * @param  string  $file
-	 * @return bool
-	 */
-	public static function isFile(string $file): bool {
-		return is_file($file);
 	}
 
 	/**
