@@ -126,8 +126,15 @@ class Directory extends FileObject {
      * @param string $file
      * @return bool
      */
-    public function isParent(mixed $file): bool {
+    public function isChildOf(mixed $file): bool {
         return !empty($file) && str_starts_with($this->fullName, (string)$file);
+    }
+
+    /**
+     * 判断输入的路径是否是当前文件夹的子级
+     */
+    public function isParentOf(mixed $file): bool {
+        return !empty($file) && str_starts_with((string)$file, $this->fullName);
     }
 
     /**
