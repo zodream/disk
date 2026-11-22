@@ -202,7 +202,7 @@ class File extends FileObject {
      * @return bool|int
      */
     public function write(mixed $data, bool|int $lock = false): bool|int {
-        if (!is_string($data) && !is_integer($data)) {
+        if (!is_string($data) && !is_int($data)) {
             $data = var_export($data, true);
         }
         if (is_bool($lock)) {
