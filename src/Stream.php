@@ -18,7 +18,7 @@ class Stream implements IStreamWriter, IStreamReader {
      */
     protected mixed $file;
 
-    public function __construct($file,
+    public function __construct(mixed $file,
         /**
          * 是否加锁
          * @var false
@@ -86,6 +86,9 @@ class Stream implements IStreamWriter, IStreamReader {
      * @return bool
      */
     public function isEnd(): bool {
+        if (!$this->isResource()) {
+            return true;
+        }
         return feof($this->stream);
     }
 
